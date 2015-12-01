@@ -1,112 +1,124 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from bs4 import BeautifulSoup;
-import urllib, cStringIO,json, mechanize,re;
-from PIL import Image;
+import urllib,json;
 from pymongo import MongoClient;
 from time import gmtime, strftime
-from urlparse import urlparse
 
 class Scraper():
-    def __init__(self,search):
-        self.urls = [
-            'http://memes.parawhatsapp.es/memes-de-viernes-para-whatsapp/'
-        ];
+    def __init__(self,search, lang):
 
-        # Palabras a buscar
+        #Words to search
         self.search = search;
 
-        # Array para obtener urls correctas
-        self.urlsOpened = [];
+        #Language
+        self.lang = lang;
 
-        # Instanciamos pymongo
+        #Instance pymongo
         self.client = MongoClient();
-        # name db
+
+        #Name DB
         self.db = self.client.itsfriday;
-        # name  collections
+
+        #Name Collections
         self.collection = self.db.itsfriday;
-        self.collection.drop();
 
+    #Set images in MongoDB
+    def setMemesInMongo(self,title ,urlImage ,sourceUrlImage):
 
-    def checkUrls(self):
-        for x in self.urls:
-            try :
-                urllib.urlopen(x);
-                # Agregamos url
-                self.urlsOpened.append(x);
-            except IOError,e:
-                print "Error en al abrir la url " + x;
+        searchImage = self.collection.find_one({"urlImage": urlImage});
 
-        return self.urlsOpened;
+        if searchImage == None:
+            self.collection.insert_one(
+                {
+                    "urlImage": urlImage,
+                    "title": title,
+                    "source": sourceUrlImage,
+                    "date_insert": strftime("%Y-%m-%d %H:%M:%S", gmtime()),
+                    "lang": self.lang
+                }
+            );
 
-    def parseHtml(self):
-        for list in self.urlsOpened:
-            url = urllib.urlopen(list).read();
-            soup = BeautifulSoup(url,'lxml');
-
-            # Buscar por a href o por img src
-            i = 0;
-            for images in soup.findAll('a'):
-                if re.search("jpg",images['href']) or re.search("jpeg",images['href']) or re.search("png",images['href']):
-                    #print images['href'];
-                    file = cStringIO.StringIO(urllib.urlopen(images['href']).read())
-                    im = Image.open(file);
-                    width, height = im.size;
-
-                    if width >= 300 and height >= 200:
-                        #Insert Collection
-                        self.setMemesInMongo(list, images['href']);
-
-
-    # Funcion que inserta collection en mongo
-    def setMemesInMongo(self, urlMeme, imageHref):
-        self.collection.insert_one(
-            {
-                "img": imageHref,
-                "name": imageHref,
-                "source": urlMeme,
-                "date_insert": strftime("%Y-%m-%d %H:%M:%S", gmtime()),
-                "lang": "es"
-            }
-        );
-
-    def printCollectionMongoIstFriday(self):
-        cursor =  self.collection.find();
+    def printCollectionMongo(self):
+        cursor = self.collection.find();
         for document in cursor:
             print(document)
 
 
-
     def getImagesGoogle(self):
 
-        json_array_images_google = [];
-        start = 0;
-        end = 100
+        cont = 10;
 
-        search = self.search.replace(" ","%20");
+        #If txt file contains a number for startIndex
+        if self.loadStartIndex() != "":
+            start = int(self.loadStartIndex());
+            end = (int(self.loadStartIndex()) + cont);
 
-        while start != 60:
+            search = self.search.replace(" ","%20");
 
-            url = ('https://ajax.googleapis.com/ajax/services/search/images?v=1.0&q=' + str(search) + '&start=' + str(start));
-            html = urllib.urlopen(url).read();
+            while start != end:
 
-            json_objet = json.loads(html);
+                url = ('https://ajax.googleapis.com/ajax/services/search/images?v=1.0&q=' + str(search) + '&start=' + str(start));
+                html = urllib.urlopen(url).read();
 
-            print json_objet
-            start+=1;
+                json_objet = json.loads(html);
+
+                if str(json_objet['responseData']) not in "None":
+                    for results in json_objet['responseData']['results']:
+                        titleNoFormatting = results['titleNoFormatting']; #title without html
+                        sourceUrlImage = results['originalContextUrl']; #url source
+                        width = results['width'];
+                        height = results['height'];
+                        url = results['url'];
+
+                        #More data
+                        #unescapedUrl = results['unescapedUrl'];
+                        #title = results['title']; #title with html
+                        #imageId = results['imageId'];
 
 
+                        if width >= 300 and height >= 200:
+                            #Inserta data
+                            self.setMemesInMongo(titleNoFormatting,url,sourceUrlImage);
+                start+=1;
+
+            end = start;
+            self.setNewStartIndex(end);
+        else:
+            #error
+            print "Ups , an error has occurred in txt file"
+
+    #Load current startIndex from txt file
+    def loadStartIndex(self):
+        f = open('./txt/startIndex.txt','r')
+        index = ""
+
+        while 1:
+            line = f.readline()
+            if not line:break
+            index += line
+
+        f.close()
+
+        return index
+
+    #Set new startIndex into txt file
+    def setNewStartIndex(self,index):
+        f = open('./txt/startIndex.txt','w');
+
+        #Delete content
+        f.truncate();
+        #Write new startIndex
+        f.write(str(index));
+
+        f.close();
 
 
-
-
-# Llamada ejemplo
+#Example
 search = "memes es viernes";
-craw = Scraper(search);
-"""
-craw.checkUrls();
-craw.parseHtml();
-craw.printCollectionMongoIstFriday();
-"""
-craw.getImagesGoogle();
+
+# New instance
+scraper = Scraper(search, 'es');
+
+scraper.getImagesGoogle();
+scraper.printCollectionMongo();

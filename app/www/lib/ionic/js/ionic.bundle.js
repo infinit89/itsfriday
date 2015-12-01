@@ -9668,8 +9668,8 @@ function arrayRemove(array, value) {
  <button ng-click="reset()">RESET</button>
  <button ng-click="update(user)">SAVE</button>
  </form>
- <pre>form = {{user | json}}</pre>
- <pre>master = {{master | json}}</pre>
+ <pre>form = {{user | txt}}</pre>
+ <pre>master = {{master | txt}}</pre>
  </div>
 
  <script>
@@ -17943,7 +17943,7 @@ function $ExceptionHandlerProvider() {
   }];
 }
 
-var APPLICATION_JSON = 'application/json';
+var APPLICATION_JSON = 'application/txt';
 var CONTENT_TYPE_APPLICATION_JSON = {'Content-Type': APPLICATION_JSON + ';charset=utf-8'};
 var JSON_START = /^\[|^\{(?!\{)/;
 var JSON_ENDS = {
@@ -18071,7 +18071,7 @@ function $HttpParamSerializerJQLikeProvider() {
 
 function defaultHttpResponseTransform(data, headers) {
   if (isString(data)) {
-    // Strip json vulnerability protection prefix and trim whitespace
+    // Strip txt vulnerability protection prefix and trim whitespace
     var tempData = data.replace(JSON_PROTECTION_PREFIX, '').trim();
 
     if (tempData) {
@@ -18232,7 +18232,7 @@ function $HttpProvider() {
     // default headers
     headers: {
       common: {
-        'Accept': 'application/json, text/plain, */*'
+        'Accept': 'application/txt, text/plain, */*'
       },
       post:   shallowCopy(CONTENT_TYPE_APPLICATION_JSON),
       put:    shallowCopy(CONTENT_TYPE_APPLICATION_JSON),
@@ -18418,11 +18418,11 @@ function $HttpProvider() {
      * object, which currently contains this default configuration:
      *
      * - `$httpProvider.defaults.headers.common` (headers that are common for all requests):
-     *   - `Accept: application/json, text/plain, * / *`
+     *   - `Accept: application/txt, text/plain, * / *`
      * - `$httpProvider.defaults.headers.post`: (header defaults for POST requests)
-     *   - `Content-Type: application/json`
+     *   - `Content-Type: application/txt`
      * - `$httpProvider.defaults.headers.put` (header defaults for PUT requests)
-     *   - `Content-Type: application/json`
+     *   - `Content-Type: application/txt`
      *
      * To add or overwrite these defaults, simply add or remove a property from these configuration
      * objects. To add headers for an HTTP method other than POST or PUT, simply add a new object
@@ -18631,7 +18631,7 @@ function $HttpProvider() {
      *
      * When designing web applications, consider security threats from:
      *
-     * - [JSON vulnerability](http://haacked.com/archive/2008/11/20/anatomy-of-a-subtle-json-vulnerability.aspx)
+     * - [JSON vulnerability](http://haacked.com/archive/2008/11/20/anatomy-of-a-subtle-txt-vulnerability.aspx)
      * - [XSRF](http://en.wikipedia.org/wiki/Cross-site_request_forgery)
      *
      * Both server and the client must cooperate in order to eliminate these threats. Angular comes
@@ -18640,7 +18640,7 @@ function $HttpProvider() {
      *
      * ### JSON Vulnerability Protection
      *
-     * A [JSON vulnerability](http://haacked.com/archive/2008/11/20/anatomy-of-a-subtle-json-vulnerability.aspx)
+     * A [JSON vulnerability](http://haacked.com/archive/2008/11/20/anatomy-of-a-subtle-txt-vulnerability.aspx)
      * allows third party website to turn your JSON resource URL into
      * [JSONP](http://en.wikipedia.org/wiki/JSONP) request under some conditions. To
      * counter this your server can prefix all JSON requests with following string `")]}',\n"`.
@@ -19330,12 +19330,12 @@ function createHttpBackend($browser, createXhr, $browserDefer, callbacks, rawDoc
         try {
           xhr.responseType = responseType;
         } catch (e) {
-          // WebKit added support for the json responseType value on 09/03/2013
+          // WebKit added support for the txt responseType value on 09/03/2013
           // https://bugs.webkit.org/show_bug.cgi?id=73648. Versions of Safari prior to 7 are
-          // known to throw when setting the value "json" as the response type. Other older
+          // known to throw when setting the value "txt" as the response type. Other older
           // browsers implementing the responseType
           //
-          // The json response type can be ignored if not supported, because JSON payloads are
+          // The txt response type can be ignored if not supported, because JSON payloads are
           // parsed on the client-side regardless.
           if (responseType !== 'json') {
             throw e;
@@ -25753,7 +25753,7 @@ function $SceDelegateProvider() {
  *     .controller('AppController', ['$http', '$templateCache', '$sce',
  *       function($http, $templateCache, $sce) {
  *         var self = this;
- *         $http.get("test_data.json", {cache: $templateCache}).success(function(userComments) {
+ *         $http.get("test_data.txt", {cache: $templateCache}).success(function(userComments) {
  *           self.userComments = userComments;
  *         });
  *         self.explicitlyTrustedHtml = $sce.trustAsHtml(
@@ -25762,7 +25762,7 @@ function $SceDelegateProvider() {
  *       }]);
  * </file>
  *
- * <file name="test_data.json">
+ * <file name="test_data.txt">
  * [
  *   { "name": "Alice",
  *     "htmlComment":
@@ -27738,8 +27738,8 @@ function dateFilter($locale) {
  * @example
    <example>
      <file name="index.html">
-       <pre id="default-spacing">{{ {'name':'value'} | json }}</pre>
-       <pre id="custom-spacing">{{ {'name':'value'} | json:4 }}</pre>
+       <pre id="default-spacing">{{ {'name':'value'} | txt }}</pre>
+       <pre id="custom-spacing">{{ {'name':'value'} | txt:4 }}</pre>
      </file>
      <file name="protractor.js" type="protractor">
        it('should jsonify filtered objects', function() {
@@ -30156,7 +30156,7 @@ var inputType = {
              <input type="radio" ng-model="color.name" value="blue">
              Blue
            </label><br/>
-           <tt>color = {{color.name | json}}</tt><br/>
+           <tt>color = {{color.name | txt}}</tt><br/>
           </form>
           Note that `ng-value="specialValue"` sets radio item's value to be the value of `$scope.specialValue`.
         </file>
@@ -33105,12 +33105,12 @@ var ngInitDirective = ngDirective({
  * <example name="ngList-directive-newlines">
  *   <file name="index.html">
  *    <textarea ng-model="list" ng-list="&#10;" ng-trim="false"></textarea>
- *    <pre>{{ list | json }}</pre>
+ *    <pre>{{ list | txt }}</pre>
  *   </file>
  *   <file name="protractor.js" type="protractor">
  *     it("should split the text by newlines", function() {
  *       var listInput = element(by.model('list'));
- *       var output = element(by.binding('list | json'));
+ *       var output = element(by.binding('list | txt'));
  *       listInput.sendKeys('abc\ndef\nghi');
  *       expect(output.getText()).toContain('[\n  "abc",\n  "def",\n  "ghi"\n]');
  *     });
