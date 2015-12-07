@@ -21,7 +21,7 @@ class Scraper():
         self.db = self.client.itsfriday;
 
         #Name Collections
-        self.collection = self.db.itsfriday;
+        self.collection = self.db.memes;
 
     #Set images in MongoDB
     def setMemesInMongo(self,title ,urlImage ,sourceUrlImage):
