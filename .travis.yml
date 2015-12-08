@@ -9,6 +9,9 @@ php:
 services:
   - mongodb
 
+install:
+  - rest/tests/travis/mongodb-install.sh
+
 before_script:  
     - cd rest && composer update
 
