@@ -1,7 +1,7 @@
 <phpunit>
   <testsuites>
     <testsuite name="APIRest">
-      <file>rest/tests/ApiTest.php</file>
+      <directory>rest/tests</directory>
     </testsuite>
   </testsuites>
 </phpunit>
