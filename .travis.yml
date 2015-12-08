@@ -14,4 +14,4 @@ install:
 before_script:  
     - cd rest && composer update
 
-script: phpunit
+script: phpunit phpunit.xml
