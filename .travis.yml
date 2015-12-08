@@ -10,6 +10,6 @@ services:
   - mongodb
 
 before_script:  
-    - cd rest && composer install 
+    - cd rest && composer update
 
 script: phpunit rest/tests
