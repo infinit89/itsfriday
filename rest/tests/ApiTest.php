@@ -9,8 +9,10 @@ class ApiTest extends PHPUnit_Framework_TestCase {
 
     protected function setUp() {
 
+        $config = json_decode(file_get_contents(dirname(__FILE__) . '/../../config.json'));
+
         $this->client = new GuzzleHttp\Client([
-            'base_uri' => 'http://localhost/v1/'
+            'base_uri' => $config->api->endpoint
         ]);
 
     }
@@ -21,34 +23,31 @@ class ApiTest extends PHPUnit_Framework_TestCase {
 
         $this->assertEquals(200, $response->getStatuscode());
 
+        $data = json_decode($response->getBody());
 
-        $data = $response->getBody();
-
-        $this->assertArrayHasKey('cant', $data);
-        $this->assertArrayHasKey('lang', $data);
-        $this->assertArrayHasKey('items', $data);
+        $this->assertObjectHasAttribute('cant', $data);
+        $this->assertObjectHasAttribute('lang', $data);
+        $this->assertObjectHasAttribute('items', $data);
 
         // The quantity of elements should match the cant returned in json
-        $this->assertCount($data['cant'], $data['items']);
+        $this->assertCount($data->cant, $data->items);
     }
 
     public function testGet_Memes_LangEn() {
-        $response = $this->client->get('/memes'. [
-                'query' => [
-                    'lang' => 'en'
-                ]
-            ]);
+
+        $response = $this->client->get('memes/lang/en');
 
         $this->assertEquals(200, $response->getStatuscode());
 
-        $data = $response->getBody();
+        $data = json_decode($response->getBody());
 
-        $this->assertArrayHasKey('cant', $data);
-        $this->assertArrayHasKey('lang', 'en');
-        $this->assertArrayHasKey('items', $data);
+        $this->assertObjectHasAttribute('cant', $data);
+        $this->assertObjectHasAttribute('lang', $data);
+        $this->assertObjectHasAttribute('items', $data);
+        $this->assertEquals($data->lang, 'en');
 
         // The quantity of elements should match the cant returned in json
-        $this->assertCount($data['cant'], $data['items']);
+        $this->assertCount($data->cant, $data->items);
     }
 
 }

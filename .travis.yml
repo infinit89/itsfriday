@@ -15,5 +15,4 @@ before_script:
     - cd rest && composer update
 
 script:   
-    - cd ..
-    - phpunit --configuration phpunit.xml
+    - cd .. && phpunit --configuration phpunit.xml
