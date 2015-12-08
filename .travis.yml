@@ -14,4 +14,4 @@ install:
 before_script:  
     - cd rest && composer update
 
-script: sh rest/vendor/bin/phpunit --configuration phpunit.xml
+script: sh vendor/bin/phpunit --configuration phpunit.xml
