@@ -2,7 +2,6 @@
 #
 # install mongodb
 
-pecl install mongodb
 echo "extension = mongodb.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
 
 echo "MongoDB Server version:"
