@@ -21,8 +21,13 @@ $r3 = new Router('/v1');
 /*
  *
  */
-$r3->get('/memes/lang/*/*/*', function($lang, $start = 0, $limit = 10) {
+$r3->get('/memes/lang/*/*/*', function($lang, $start = 0, $limit = 10) use ($collection)  {
 
+    $cursor = $collection->find(['lang' => $lang]); // ->limit($limit)
+
+    foreach ($cursor as $id => $value) {
+        echo $id .' -> ' . $value . '<br />';
+    }
 
     return json_encode('Memes desde el ' . $start . ' hasta el ' . $limit . ' en ' . $lang);
 });
