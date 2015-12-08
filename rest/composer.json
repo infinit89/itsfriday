@@ -1,0 +1,12 @@
+{
+  "require": {
+    "respect/rest": "0.6.*",
+    "mongodb/mongodb": "^1.0.0@beta"
+  },
+
+  "require-dev": {
+    "guzzlehttp/guzzle": "6.1.*",
+    "phpunit/phpunit": "5.0.*"
+
+  }
+}

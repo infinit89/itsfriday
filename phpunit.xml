@@ -1,0 +1,7 @@
+<phpunit>
+  <testsuites>
+    <testsuite name="APIRest">
+      <directory>rest/tests</directory>
+    </testsuite>
+  </testsuites>
+</phpunit>

@@ -1,0 +1,12 @@
+{
+  "mongodb": {
+    "server": "127.0.0.1",
+    "port": "27017",
+    "db": "itsfriday",
+    "memes_collection": "memes"
+  },
+  "api": {
+    "endpoint": "http://127.0.0.1/v1/"
+  }
+
+}

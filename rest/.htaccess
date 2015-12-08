@@ -1,0 +1,4 @@
+RewriteEngine On
+
+# Api v1
+RewriteRule ^v1/(.*)$ api.php [L]
