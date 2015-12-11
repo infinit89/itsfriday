@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import urllib,json;
+import urllib,urllib2,json;
 from pymongo import MongoClient;
 from time import gmtime, strftime
 
@@ -44,7 +44,7 @@ class Scraper():
         for document in cursor:
             print(document)
 
-
+    # Deprecated, use CustomSearch API
     def getImagesGoogle(self):
 
         cont = 10;
@@ -75,6 +75,52 @@ class Scraper():
                         #unescapedUrl = results['unescapedUrl'];
                         #title = results['title']; #title with html
                         #imageId = results['imageId'];
+
+
+                        if width >= 300 and height >= 200:
+                            #Inserta data
+                            self.setMemesInMongo(titleNoFormatting,url,sourceUrlImage);
+                start+=1;
+
+            end = start;
+            self.setNewStartIndex(end);
+        else:
+            #error
+            print "Ups , an error has occurred in txt file"
+
+    def getImagesBing(self):
+
+        cont = 10;
+
+        keyBing = 'XJ4NbYb5R6ui4CL2WbfDcnBtil91K/TwhpNVNzjZW+A'        # get Bing key from: https://datamarket.azure.com/account/keys
+        credentialBing = 'Basic ' + (':%s' % keyBing).encode('base64')[:-1] # the "-1" is to remove the trailing "\n" which encode adds
+
+        #If txt file contains a number for startIndex
+        if self.loadStartIndex() != "":
+            start = int(self.loadStartIndex());
+            end = (int(self.loadStartIndex()) + cont);
+
+            search = self.search.replace(" ","%20");
+
+            while start != end:
+
+                url = ('https://api.datamarket.azure.com/Bing/Search/Image?$format=json&Query=%27' + search + '%27&$top=' + str(end) + '&$skip=' + str(start))
+
+                request = urllib2.Request(url)
+                request.add_header('Authorization', credentialBing)
+                requestOpener = urllib2.build_opener()
+                response = requestOpener.open(request)
+
+                results = json.load(response)
+
+                if str(results['d']['results']) not in "None":
+                    for row in results['d']['results']:
+
+                        sourceUrlImage = row['SourceUrl'] # url web
+                        url = row['MediaUrl'] #url image
+                        width = row['Width']
+                        height = row['Height']
+                        titleNoFormatting = row['Title']
 
 
                         if width >= 300 and height >= 200:
@@ -120,5 +166,5 @@ search = "memes es viernes";
 # New instance
 scraper = Scraper(search, 'es');
 
-scraper.getImagesGoogle();
+scraper.getImagesBing();
 scraper.printCollectionMongo();
