@@ -14,6 +14,9 @@ class Scraper():
         # Language
         self.lang = lang;
 
+        # API KEY BING from: https://datamarket.azure.com/account/keys
+        self.API_KEY_BING = 'XJ4NbYb5R6ui4CL2WbfDcnBtil91K/TwhpNVNzjZW+A'
+
         # Url file connection mongo
         self.configJson = '../config.json'
 
@@ -108,8 +111,7 @@ class Scraper():
 
         cont = 10;
 
-        keyBing = 'XJ4NbYb5R6ui4CL2WbfDcnBtil91K/TwhpNVNzjZW+A'        # get Bing key from: https://datamarket.azure.com/account/keys
-        credentialBing = 'Basic ' + (':%s' % keyBing).encode('base64')[:-1] # the "-1" is to remove the trailing "\n" which encode adds
+        credentialBing = 'Basic ' + (':%s' % self.API_KEY_BING).encode('base64')[:-1] # the "-1" is to remove the trailing "\n" which encode adds
 
         # If txt file contains a number for startIndex
         if self.loadStartIndex() != "":
