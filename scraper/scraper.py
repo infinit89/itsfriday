@@ -8,22 +8,35 @@ from time import gmtime, strftime
 class Scraper():
     def __init__(self,search, lang):
 
-        #Words to search
+        # Words to search
         self.search = search;
 
-        #Language
+        # Language
         self.lang = lang;
 
-        #Instance pymongo
-        self.client = MongoClient();
+        # Url file connection mongo
+        self.configJson = '../config.json'
 
-        #Name DB
-        self.db = self.client.itsfriday;
+        # Read file config.json
+        data_connect = self.getConnectionMongo();
 
-        #Name Collections
-        self.collection = self.db.memes;
+        # Instance pymongo
+        self.client = MongoClient(data_connect['mongodb']['server'],int(data_connect['mongodb']['port']));
 
-    #Set images in MongoDB
+        # Name DB
+        self.db = self.client.data_connect['mongodb']['db'];
+
+        # Name Collections
+        self.collection = self.db.data_connect['mongodb']['memes_collection'];
+
+    # Read config.json with data connection mongo
+    def getConnectionMongo(self):
+        with open(self.configJson) as configJson:
+            json_data = json.load(configJson)
+
+        return json_data
+
+    # Set images in MongoDB
     def setMemesInMongo(self,title ,urlImage ,sourceUrlImage):
 
         searchImage = self.collection.find_one({"urlImage": urlImage});
@@ -39,12 +52,14 @@ class Scraper():
                 }
             );
 
+    # Print data from mongodb
     def printCollectionMongo(self):
         cursor = self.collection.find();
         for document in cursor:
             print(document)
 
     # Deprecated, use CustomSearch API
+    """
     def getImagesGoogle(self):
 
         cont = 10;
@@ -87,6 +102,7 @@ class Scraper():
         else:
             #error
             print "Ups , an error has occurred in txt file"
+    """
 
     def getImagesBing(self):
 
@@ -95,7 +111,7 @@ class Scraper():
         keyBing = 'XJ4NbYb5R6ui4CL2WbfDcnBtil91K/TwhpNVNzjZW+A'        # get Bing key from: https://datamarket.azure.com/account/keys
         credentialBing = 'Basic ' + (':%s' % keyBing).encode('base64')[:-1] # the "-1" is to remove the trailing "\n" which encode adds
 
-        #If txt file contains a number for startIndex
+        # If txt file contains a number for startIndex
         if self.loadStartIndex() != "":
             start = int(self.loadStartIndex());
             end = (int(self.loadStartIndex()) + cont);
@@ -113,28 +129,29 @@ class Scraper():
 
                 results = json.load(response)
 
-                if str(results['d']['results']) not in "None":
+                if len(results['d']['results']) > 0:
                     for row in results['d']['results']:
 
                         sourceUrlImage = row['SourceUrl'] # url web
-                        url = row['MediaUrl'] #url image
+                        url = row['MediaUrl'] # url image
                         width = row['Width']
                         height = row['Height']
                         titleNoFormatting = row['Title']
 
 
                         if width >= 300 and height >= 200:
-                            #Inserta data
+                            # Inserta data
                             self.setMemesInMongo(titleNoFormatting,url,sourceUrlImage);
                 start+=1;
+
 
             end = start;
             self.setNewStartIndex(end);
         else:
-            #error
+            # Error
             print "Ups , an error has occurred in txt file"
 
-    #Load current startIndex from txt file
+    # Load current startIndex from txt file
     def loadStartIndex(self):
         f = open('./txt/startIndex.txt','r')
         index = ""
@@ -148,19 +165,19 @@ class Scraper():
 
         return index
 
-    #Set new startIndex into txt file
+    # Set new startIndex into txt file
     def setNewStartIndex(self,index):
         f = open('./txt/startIndex.txt','w');
 
-        #Delete content
+        # Delete content
         f.truncate();
-        #Write new startIndex
+        # Write new startIndex
         f.write(str(index));
 
         f.close();
 
 
-#Example
+# Example search
 search = "memes es viernes";
 
 # New instance
