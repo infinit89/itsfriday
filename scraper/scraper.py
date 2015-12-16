@@ -124,21 +124,21 @@ class Scraper():
 
                 url = ('https://api.datamarket.azure.com/Bing/Search/Image?$format=json&Query=%27' + search + '%27&$top=' + str(end) + '&$skip=' + str(start))
 
-                request = urllib2.Request(url)
-                request.add_header('Authorization', credentialBing)
-                requestOpener = urllib2.build_opener()
-                response = requestOpener.open(request)
+                request = urllib2.Request(url);
+                request.add_header('Authorization', credentialBing);
+                requestOpener = urllib2.build_opener();
+                response = requestOpener.open(request);
 
-                results = json.load(response)
+                results = json.load(response);
 
                 if len(results['d']['results']) > 0:
                     for row in results['d']['results']:
 
-                        sourceUrlImage = row['SourceUrl'] # url web
-                        url = row['MediaUrl'] # url image
-                        width = row['Width']
-                        height = row['Height']
-                        titleNoFormatting = row['Title']
+                        sourceUrlImage = row['SourceUrl']; # url web
+                        url = row['MediaUrl']; # url image
+                        width = row['Width'];
+                        height = row['Height'];
+                        titleNoFormatting = row['Title'];
 
 
                         if width >= 300 and height >= 200:
