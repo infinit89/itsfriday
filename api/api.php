@@ -14,7 +14,7 @@ try {
     die(json_encode('Imposible recuperar los memes'));
 }
 
-$r3 = new Router('/v1');
+$r3 = new Router('/api/v1');
 
 /*
  *
