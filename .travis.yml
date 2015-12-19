@@ -23,7 +23,7 @@ before_script:
     - sudo cp -f api/tests/travis/travis-ci-apache /etc/apache2/sites-available/default
     - sudo sed -e "s?%TRAVIS_BUILD_DIR%?$(pwd)?g" --in-place /etc/apache2/sites-available/default
     - sudo service apache2 restart
-    - cd rest && composer update
+    - cd api && composer update
 
 script:   
     - cd .. && phpunit --configuration phpunit.xml
